@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,9 +18,12 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
         private float _jumpHeight = 15.0f; //how high can the character jump
         [SerializeField]
         private bool _crouching = false; //bool to display if we are crouched or not
+        [SerializeField]
+        private float _doubleJumpTime = 3.0f; //how long you can be in air and double jump
 
         private CharacterController _controller; //reference variable to the character controller component
         private float _yVelocity = 0.0f; //cache our y velocity
+        private float _jumpTime; //cache our double jump time and time.time
         
 
         [Header("Headbob Settings")]       
@@ -96,11 +99,20 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
                 if (Input.GetKeyDown(KeyCode.Space)) //check for the space key
                 {
                     _yVelocity = _jumpHeight; //assign the cache velocity to our jump height
+                    _jumpTime = _doubleJumpTime + Time.time;
                 }
             }
             else //we're not grounded
             {
                 _yVelocity -= _gravity; //subtract gravity from our yVelocity 
+            }
+
+            if (_controller.isGrounded == false && Time.time <= _jumpTime)
+            {
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    _yVelocity = _jumpHeight; //assign the cache velocity to our jump height
+                }
             }
 
             velocity.y = _yVelocity; //assign the cached value of our yvelocity
@@ -171,4 +183,6 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
         }
     }
 }
+
+
 
